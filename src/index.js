@@ -1,116 +1,162 @@
-/* ДЗ 2 - работа с массивами и объеектами */
+/* ДЗ 3 - работа с исключениями и отладчиком */
 
 /*
  Задание 1:
 
- Напишите аналог встроенного метода forEach для работы с массивами
- Посмотрите как работает forEach и повторите это поведение для массива, который будет передан в параметре array
+ 1.1: Функция принимает массив и фильтрующую фукнцию и должна вернуть true или false
+ Функция должна вернуть true только если fn вернула true для всех элементов массива
+
+ 1.2: Необходимо выбрасывать исключение в случаях:
+   - array не массив или пустой массив (с текстом "empty array")
+   - fn не является функцией (с текстом "fn is not a function")
+
+ Зарпещено использовать встроенные методы для работы с массивами
+
+ Пример:
+   isAllTrue([1, 2, 3, 4, 5], n => n < 10) // вернет true
+   isAllTrue([100, 2, 3, 4, 5], n => n < 10) // вернет false
  */
-function forEach(array, fn) {
+// function isAllTrue(array, fn) {
+// }
+function isAllTrue(array, fn) {
 
-  for (let i=0; i<array.length; i++) {
-     fn(array[i], i, array);
-  }
+    var al = array.length;
+    var isArr = array instanceof Array;
+
+    if ( !isArr || al === 0) {
+        throw ('empty array');
+    }
+    if ( typeof fn != 'function') {
+        throw ('fn is not a function');
+    }
+    for (var i = 0; i < al; i++) {
+        if (!fn(array[i])) {
+            return false;
+        }        
+    }
+    return true; 
 }
-
 /*
  Задание 2:
 
- Напишите аналог встроенного метода map для работы с массивами
- Посмотрите как работает map и повторите это поведение для массива, который будет передан в параметре array
+ 2.1: Функция принимает массив и фильтрующую фукнцию и должна вернуть true или false
+ Функция должна вернуть true если fn вернула true хотя бы для одного из элементов массива
+
+ 2.2: Необходимо выбрасывать исключение в случаях:
+   - array не массив или пустой массив (с текстом "empty array")
+   - fn не является функцией (с текстом "fn is not a function")
+
+ Зарпещено использовать встроенные методы для работы с массивами
+
+ Пример:
+   isSomeTrue([1, 2, 30, 4, 5], n => n > 20) // вернет true
+   isSomeTrue([1, 2, 3, 4, 5], n => n > 20) // вернет false
  */
-function map(array, fn) {
+function isSomeTrue(array, fn) {
 
-   var copy = [];
+    var al = array.length;
+    var isArr = array instanceof Array;
 
-   for (let i=0; i<array.length; i++) {
-    fn(array[i], i, array);
-    copy.push(array[i]**2);
-  }
-    return copy;
+    if ( !isArr || al === 0) {
+        throw ('empty array');
+    }
+    if ( typeof fn != 'function') {
+        throw ('fn is not a function');
+    }
+    for (var i = 0; i < al; i++) {
+        if (fn(array[i])) {
+            return true;
+        }        
+    }
+    return false; 
+  
 }
 
 /*
  Задание 3:
 
- Напишите аналог встроенного метода reduce для работы с массивами
- Посмотрите как работает reduce и повторите это поведение для массива, который будет передан в параметре array
+ 3.1: Функция принимает заранее неизветсное количество аргументов, первым из которых является функция fn
+ Функция должна поочередно запустить fn для каждого переданного аргумента (кроме самой fn)
+
+ 3.2: Функция должна вернуть массив аргументов, для которых fn выбросила исключение
+
+ 3.3: Необходимо выбрасывать исключение в случаях:
+   - fn не является функцией (с текстом "fn is not a function")
  */
-function reduce(array, fn, initial) {
+function returnBadArguments(fn) {
+  var arr = [];
+  if ( typeof fn != 'function') {
+    throw ('fn is not a function');
+  }
+  for (var i = 1; i < arguments.length; i++) {
+      try {
+        fn(arguments[i]);
+      } catch (e) {
+        arr.push(arguments[i]);
+      }   
+  }
+  return arr;
 
-    let val = initial || array[0];
-
-    let i = 0;
-    if(val == array[0]){
-        i = 1;
-    }
-
-    for (; i<array.length; i++) {
-
-        val = fn(val, array[i], i, array);
-    }
-    return val;
 }
 
 /*
  Задание 4:
 
- Функция должна перебрать все свойства объекта, преобразовать их имена в верхний регистр и вернуть в виде массива
+ 4.1: Функция имеет параметр number (по умолчанию - 0)
 
- Пример:
-   upperProps({ name: 'Сергей', lastName: 'Петров' }) вернет ['NAME', 'LASTNAME']
+ 4.2: Функция должна вернуть объект, у которого должно быть несколько методов:
+   - sum - складывает number с переданными аргументами
+   - dif - вычитает из number переданные аргументы
+   - div - делит number на первый аргумент. Результат делится на следующий аргумент (если передан) и так далее
+   - mul - умножает number на первый аргумент. Результат умножается на следующий аргумент (если передан) и так далее
+
+ Количество передаваемых в методы аргументов заранее неизвестно
+
+ 4.3: Необходимо выбрасывать исключение в случаях:
+   - number не является числом (с текстом "number is not a number")
+   - какой-либо из аргументов div является нулем (с текстом "division by 0")
  */
-function upperProps(obj) {
+function calculator(number = 0) {
 
-    var arr = [];
-
-    for (var key in obj ) {
-      arr.push(key.toUpperCase());
-
-    }
-    return arr;
-}
-
-/*
- Задание 5 *:
-
- Напишите аналог встроенного метода slice для работы с массивами
- Посмотрите как работает slice и повторите это поведение для массива, который будет передан в параметре array
- */
-function slice(array, from, to) {
-
-  var arr = [];
-
-  for (var j = 0; j < array.length; j++){
-
-    if(j < to && j >= from){
-      arr.push(array[j]);
-    }
-    // if(j < to ){
-    //   arr.push(array[j]);
-    // }
+  if(isFinite(number) != true){
+   throw ('number is not a number');
   }
-    consoloe.log(array);
-    consoloe.log(from);
-    consoloe.log(to);
-  return arr;
-}
-// slice([0,1,2,3,4,5], 1, 3)
 
-/*
- Задание 6 *:
+  var obj = {
+    sum: function(...args) {
 
- Функция принимает объект и должна вернуть Proxy для этого объекта
- Proxy должен перехватывать все попытки записи значений свойств и возводить это значение в квадрат
- */
-function createProxy(obj) {
+      var sumArgs = args.reduce(function(previousValue, currentValue, index, array){return previousValue + currentValue ;}, number);
+      return sumArgs;
+
+    },
+    dif: function(...args) {
+      var difArgs = args.reduce(function(previousValue, currentValue, index, array){return previousValue - currentValue ;}, number);
+      return difArgs;
+    },
+    div: function(...args) {
+      var divArgs = args.reduce(function(previousValue, currentValue, index, array){return previousValue / currentValue ;}, number);
+      for (let i = 0; i < args.length; i++) {
+        if(args[i] === 0){
+          throw ('division by 0');
+        }
+      }
+      return divArgs;
+    },
+    mul: function(...args) {
+      var mulArgs = args.reduce(function(previousValue, currentValue, index, array){return previousValue * currentValue ;}, number);
+      return mulArgs;
+    }
+  };
+
+
+  return obj;
 }
+
+/* При решении задач, пострайтесь использовать отладчик */
 
 export {
-    forEach,
-    map,
-    reduce,
-    upperProps,
-    slice,
-    createProxy
+    isAllTrue,
+    isSomeTrue,
+    returnBadArguments,
+    calculator
 };

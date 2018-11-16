@@ -36,12 +36,14 @@ function delayPromise(seconds) {
  */
 function loadAndSortTowns() {
 
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		var xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
         xhr.send();
         xhr.addEventListener('load', ()=> {
-
+            if (xhr.status >= 400) {
+                reject();
+            }
         	const towns = JSON.parse(xhr.responseText);
 
 	        towns.sort(function (a, b) {
@@ -56,6 +58,9 @@ function loadAndSortTowns() {
 			});
 			resolve(towns);
         })
+        xhr.addEventListener('error', ()=> {
+          reject();
+        });
 
 	});
 

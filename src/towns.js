@@ -44,7 +44,9 @@ return new Promise((resolve, reject) => {
         xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json');
         xhr.send();
         xhr.addEventListener('load', ()=> {
-
+            if (xhr.status >= 400) {
+                reject();
+            } 
             const towns = JSON.parse(xhr.responseText);
 
             towns.sort(function (a, b) {
